@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Produto</title>
+</head>
+<body>
+    <h1>Editando Produto ID: {{.ID}}</h1>
+    
+    <form action="/salvar" method="POST">
+        <p>Este form salvará como um NOVO item caso não exista</p>
+        
+        <label>Nome:</label><br>
+        <input type="text" name="nome" value="{{.Nome}}"><br><br>
+
+        <label>Preço:</label><br>
+        <input type="number" name="preco" value="{{.Preco}}"><br><br>
+
+        <button type="submit">Salvar como Novo</button>
+    </form>
+
+    <br>
+    <a href="/">Voltar</a>
+</body>
+</html>
