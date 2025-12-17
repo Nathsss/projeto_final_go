@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -7,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
+	"gorm.io/driver/sqlite"
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
@@ -15,12 +14,10 @@ import (
 var db *gorm.DB
 
 type Dados struct {
-  gorm.Model
-  Nome string
-  Preco uint
+	gorm.Model
+	Nome  string
+	Preco uint
 }
-
-
 
 func hello(w http.ResponseWriter, req *http.Request) {
     fmt.Fprintf(w, "hello\n")
@@ -33,6 +30,14 @@ func headers(w http.ResponseWriter, req *http.Request) {
             fmt.Fprintf(w, "%v: %v\n", name, h)
         }
     }
+}
+
+func listarDados(w http.ResponseWriter, req *http.Request) {
+	http.ServeFile(w, req, "templates/index.html")
+}
+
+func novo(w http.ResponseWriter, req *http.Request) {
+	http.ServeFile(w, req, "templates/form.html")
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
@@ -98,18 +103,23 @@ func main() {
 	var err error
 	db, err = gorm.Open(sqlite.Open("inventario.db"), &gorm.Config{})
 	if err != nil {
-		panic("falha ao conectar no banco de dados")
+		panic(err) 
 	}
-	
+
+
 	if err := db.AutoMigrate(&Dados{}); err != nil {
 		panic("Erro no automigrate")
 	}
+    http.HandleFunc("/hello", hello)
+    http.HandleFunc("/headers", headers)
 
-	http.HandleFunc("/", index)
+	http.HandleFunc("/", listarDados)
+	http.HandleFunc("/novo", novo)
+
+
+		http.HandleFunc("/", index)
 	http.HandleFunc("/salvar", salvar)
 	http.HandleFunc("/deletar/", deletar)
 	http.HandleFunc("/editar/", editar)
-
-	fmt.Println("Servidor rodando na porta :8090")
 	http.ListenAndServe(":8090", nil)
 }
